@@ -1,0 +1,543 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>InnerGuide — Demo</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500&family=Syne:wght@500;700&display=swap');
+
+*{box-sizing:border-box;margin:0;padding:0;}
+:root{
+  --navy:#060e1f;
+  --blue:#1A3C6B;
+  --cyan:#3af7ff;
+  --red:#ff4d6d;
+  --white:#fff;
+  --gray:#f0f4f8;
+  --text:#1a1a1a;
+  --muted:#888;
+  --border:#e5eaf0;
+}
+body{font-family:'DM Sans',sans-serif;background:var(--gray);color:var(--text);min-height:100vh;}
+
+/* TOP TAB NAV */
+.tab-nav{display:flex;justify-content:center;gap:10px;padding:28px 20px 0;}
+.tab-btn{font-family:'DM Sans',sans-serif;font-size:13px;padding:9px 22px;border-radius:50px;border:1.5px solid var(--border);background:var(--white);color:var(--muted);cursor:pointer;transition:all .2s;}
+.tab-btn.on{background:var(--blue);color:var(--white);border-color:var(--blue);}
+
+/* PANELS */
+.panel{display:none;} .panel.on{display:block;}
+
+/* ── APP PANEL ── */
+.app-panel{display:flex;justify-content:center;align-items:flex-start;gap:40px;padding:32px 20px 48px;flex-wrap:wrap;}
+.phone-shell{background:#111;border-radius:44px;padding:11px;width:300px;flex-shrink:0;box-shadow:0 30px 80px rgba(0,0,0,.22);}
+.screen{background:var(--white);border-radius:34px;overflow:hidden;display:flex;flex-direction:column;min-height:600px;}
+.pg{display:none;flex-direction:column;flex:1;} .pg.on{display:flex;}
+.sbar{background:#f7f7f7;padding:8px 18px 4px;display:flex;justify-content:space-between;font-size:10px;color:#aaa;}
+
+/* Home */
+.home-hdr{background:var(--blue);padding:22px 18px 18px;}
+.home-hdr h2{font-family:'Syne',sans-serif;font-size:22px;color:var(--white);}
+.home-hdr p{font-size:12px;color:rgba(255,255,255,.6);margin-top:3px;}
+.mic-btn{margin:12px 18px 0;background:var(--white);border:none;border-radius:50px;padding:12px 16px;display:flex;align-items:center;gap:10px;cursor:pointer;width:calc(100% - 36px);}
+.mic-circle{width:28px;height:28px;border-radius:50%;background:var(--blue);display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.mic-btn span{font-size:13px;color:#777;}
+.sec-lbl{font-size:11px;color:var(--muted);padding:14px 18px 6px;font-weight:500;letter-spacing:.4px;text-transform:uppercase;}
+.q-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;padding:0 18px;}
+.q-card{background:var(--gray);border-radius:12px;padding:12px;cursor:pointer;border:1px solid var(--border);transition:all .15s;}
+.q-card:hover{background:#e8eef5;}
+.q-card .qi{font-size:18px;margin-bottom:4px;}
+.q-card .qn{font-size:13px;font-weight:500;}
+.q-card .qs{font-size:11px;color:var(--muted);}
+.rec-item{display:flex;align-items:center;gap:10px;padding:9px 18px;cursor:pointer;}
+.rec-item:hover{background:#f7f9fc;}
+.rec-dot{width:32px;height:32px;border-radius:50%;background:var(--gray);display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0;}
+.rec-info .rn{font-size:13px;} .rec-info .rs{font-size:11px;color:var(--muted);}
+.rec-arr{margin-left:auto;color:#ccc;}
+.bnav{background:var(--white);border-top:1px solid var(--border);display:flex;justify-content:space-around;padding:8px 0 11px;margin-top:auto;}
+.btab{display:flex;flex-direction:column;align-items:center;gap:2px;font-size:10px;color:#bbb;border:none;background:none;cursor:pointer;padding:4px 10px;}
+.btab.on{color:var(--blue);}
+
+/* Voice */
+.v-top{background:var(--blue);padding:16px 18px;display:flex;align-items:center;gap:10px;}
+.bk{width:28px;height:28px;border-radius:50%;background:rgba(255,255,255,.15);border:none;color:var(--white);font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center;}
+.v-top h3{color:var(--white);font-size:15px;font-weight:500;}
+.v-body{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:20px;background:#f7f9fc;}
+.ring{width:90px;height:90px;border-radius:50%;background:var(--blue);display:flex;align-items:center;justify-content:center;margin-bottom:18px;position:relative;}
+.ring::before{content:'';position:absolute;width:118px;height:118px;border-radius:50%;border:2px solid rgba(26,60,107,.25);animation:pulse 1.5s infinite;}
+.ring::after{content:'';position:absolute;width:146px;height:146px;border-radius:50%;border:2px solid rgba(26,60,107,.12);animation:pulse 1.5s .4s infinite;}
+@keyframes pulse{0%{transform:scale(.9);opacity:1}100%{transform:scale(1.1);opacity:0}}
+.v-hint{font-size:13px;color:var(--muted);margin-bottom:6px;}
+.v-recog{font-size:18px;font-weight:500;color:var(--blue);min-height:26px;text-align:center;}
+.v-sug{width:100%;margin-top:20px;}
+.v-sug-lbl{font-size:11px;color:#bbb;text-align:center;margin-bottom:8px;text-transform:uppercase;letter-spacing:.4px;}
+.v-sug-btn{background:var(--white);border:1px solid var(--border);border-radius:50px;padding:9px 16px;font-size:13px;color:var(--blue);cursor:pointer;margin:4px auto;display:block;width:100%;text-align:center;font-family:'DM Sans',sans-serif;}
+.v-sug-btn:hover{background:#e8eef5;}
+
+/* Nav */
+canvas.map{display:block;width:100%;flex-shrink:0;}
+.nav-panel{background:var(--white);padding:13px 16px;border-top:1px solid var(--border);}
+.nav-row{display:flex;align-items:center;gap:10px;margin-bottom:10px;}
+.nav-ic{width:36px;height:36px;border-radius:50%;background:var(--blue);display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.nav-ins .na{font-size:14px;font-weight:500;} .nav-ins .nd{font-size:11px;color:var(--muted);}
+.prog{background:#eee;border-radius:4px;height:3px;margin-bottom:7px;}
+.prog-fill{background:var(--blue);height:3px;border-radius:4px;transition:width .7s;}
+.nav-meta{display:flex;justify-content:space-between;font-size:11px;color:var(--muted);margin-bottom:9px;}
+.haz{background:#fff8e1;border-radius:8px;padding:7px 11px;font-size:12px;color:#7a5800;display:flex;align-items:center;gap:6px;margin-bottom:9px;}
+.sim-btn{background:var(--blue);color:var(--white);border:none;border-radius:50px;padding:10px;width:100%;font-size:13px;cursor:pointer;font-family:'DM Sans',sans-serif;}
+
+/* Arrived */
+.arrived{display:none;flex-direction:column;align-items:center;padding:28px 20px;text-align:center;}
+.arr-ic{width:56px;height:56px;border-radius:50%;background:#e8f5e9;display:flex;align-items:center;justify-content:center;margin-bottom:14px;}
+.arrived h2{font-family:'Syne',sans-serif;font-size:18px;font-weight:500;margin-bottom:6px;}
+.arrived p{font-size:13px;color:var(--muted);}
+.home-btn{background:var(--blue);color:var(--white);border:none;border-radius:50px;padding:11px;width:100%;font-size:13px;cursor:pointer;margin-top:16px;font-family:'DM Sans',sans-serif;}
+
+/* App side info */
+.app-info{max-width:240px;padding-top:4px;}
+.app-info h3{font-family:'Syne',sans-serif;font-size:15px;font-weight:500;margin-bottom:14px;}
+.step-li{display:flex;gap:10px;margin-bottom:12px;}
+.step-n{width:22px;height:22px;border-radius:50%;background:var(--blue);color:var(--white);font-size:11px;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px;}
+.step-t{font-size:13px;color:#555;line-height:1.6;}
+.step-t b{color:var(--text);font-weight:500;display:block;}
+.hint-box{background:var(--white);border-radius:0;border-left:3px solid var(--blue);padding:10px 12px;font-size:12px;color:var(--muted);line-height:1.6;margin-top:8px;}
+
+/* ── DASHBOARD ── */
+.dash-wrap{padding:28px 20px 48px;max-width:1000px;margin:0 auto;}
+.dash{display:flex;border:1px solid var(--border);border-radius:16px;overflow:hidden;background:var(--white);box-shadow:0 4px 24px rgba(0,0,0,.07);}
+.sidebar{width:190px;background:#f7f9fc;border-right:1px solid var(--border);flex-shrink:0;padding:16px 0;}
+.sidebar-logo{padding:0 16px 16px;border-bottom:1px solid var(--border);margin-bottom:8px;}
+.sidebar-logo .lg{font-family:'Syne',sans-serif;font-size:15px;font-weight:700;color:var(--blue);}
+.sidebar-logo .ls{font-size:11px;color:var(--muted);}
+.s-item{display:flex;align-items:center;gap:8px;padding:9px 16px;font-size:13px;color:var(--muted);cursor:pointer;border:none;background:none;width:100%;text-align:left;font-family:'DM Sans',sans-serif;transition:all .15s;}
+.s-item:hover{background:#eef2f7;color:var(--text);}
+.s-item.on{background:var(--white);color:var(--blue);font-weight:500;border-right:2px solid var(--blue);}
+.s-item svg{width:15px;height:15px;flex-shrink:0;}
+.dash-main{flex:1;overflow:hidden;}
+.dash-hdr{padding:14px 20px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;}
+.dash-hdr h2{font-family:'Syne',sans-serif;font-size:15px;font-weight:500;}
+.venue-sel{font-size:12px;color:var(--muted);background:var(--gray);border:1px solid var(--border);border-radius:8px;padding:5px 10px;cursor:pointer;font-family:'DM Sans',sans-serif;}
+.metrics{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;padding:14px 20px;}
+.metric{background:var(--gray);border-radius:10px;padding:12px;}
+.metric .ml{font-size:11px;color:var(--muted);margin-bottom:4px;}
+.metric .mv{font-size:22px;font-weight:500;}
+.metric .mt{font-size:11px;color:#2e7d32;margin-top:2px;}
+.metric .mt.neg{color:#c62828;}
+.dash-panels{display:grid;grid-template-columns:minmax(0,1.4fr) minmax(0,1fr);gap:10px;padding:0 20px 14px;}
+.card{background:var(--white);border:1px solid var(--border);border-radius:10px;padding:14px;}
+.card h4{font-size:11px;font-weight:500;color:var(--muted);margin-bottom:12px;text-transform:uppercase;letter-spacing:.4px;}
+.route-row{display:flex;align-items:center;justify-content:space-between;padding:6px 0;border-bottom:1px solid var(--border);font-size:12px;}
+.route-row:last-child{border-bottom:none;}
+.route-row .rn{color:var(--text);} .route-row .rc{color:var(--muted);}
+.bar-wrap{display:flex;align-items:center;gap:6px;}
+.mini-bar{height:5px;background:var(--blue);border-radius:3px;opacity:.7;}
+.alert-item{display:flex;align-items:flex-start;gap:8px;padding:7px 0;border-bottom:1px solid var(--border);font-size:12px;}
+.alert-item:last-child{border-bottom:none;}
+.alert-dot{width:7px;height:7px;border-radius:50%;margin-top:3px;flex-shrink:0;}
+.dot-warn{background:#e9a825;} .dot-ok{background:#2e7d32;} .dot-info{background:#1565c0;}
+.alert-item .at{color:var(--text);} .alert-item .as{color:var(--muted);font-size:11px;}
+.d-view{display:none;} .d-view.on{display:block;}
+.map-card{background:var(--white);border:1px solid var(--border);border-radius:10px;overflow:hidden;margin:0 20px 14px;}
+.map-card-hdr{padding:10px 14px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;}
+.map-card-hdr h4{font-size:12px;font-weight:500;color:var(--muted);}
+.poi-item{display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid var(--border);font-size:13px;}
+.poi-item:last-child{border-bottom:none;}
+.poi-badge{font-size:10px;padding:2px 8px;border-radius:4px;margin-left:auto;}
+.badge-ok{background:#e8f5e9;color:#2e7d32;} .badge-warn{background:#fff8e1;color:#7a5800;}
+.poi-edit{font-size:11px;color:var(--blue);cursor:pointer;margin-left:8px;}
+.fb-item{border:1px solid var(--border);border-radius:10px;padding:12px 14px;margin-bottom:8px;}
+.fb-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:5px;}
+.fb-top span{font-size:13px;font-weight:500;}
+.fb-badge{font-size:10px;padding:2px 8px;border-radius:4px;}
+.fb-desc{font-size:12px;color:var(--muted);}
+.fb-time{font-size:11px;color:#bbb;margin-top:5px;}
+.add-btn{font-size:12px;padding:5px 12px;cursor:pointer;border:1px solid var(--border);border-radius:8px;background:var(--white);color:var(--text);font-family:'DM Sans',sans-serif;}
+.stat-row{display:flex;gap:8px;padding:0 20px 14px;}
+.stat-card{background:var(--gray);border-radius:10px;padding:10px 14px;font-size:12px;flex:1;}
+.stat-card .sl{color:var(--muted);margin-bottom:2px;}
+.stat-card .sv{font-weight:500;}
+</style>
+</head>
+<body>
+
+<div class="tab-nav">
+  <button class="tab-btn on" onclick="switchTab('app',this)">Mobile App (User Side)</button>
+  <button class="tab-btn" onclick="switchTab('dash',this)">Venue Admin Dashboard</button>
+</div>
+
+<!-- ══ APP PANEL ══ -->
+<div class="panel on" id="tab-app">
+<div class="app-panel">
+  <div class="phone-shell">
+    <div class="screen">
+
+      <!-- P0 Home -->
+      <div class="pg on" id="m0">
+        <div class="sbar"><span>9:41</span><span>Wi-Fi</span></div>
+        <div class="home-hdr">
+          <h2>InnerGuide</h2>
+          <p>Queen Elizabeth Hospital · 1/F</p>
+        </div>
+        <button class="mic-btn" onclick="mgo(1)">
+          <div class="mic-circle"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2"><rect x="9" y="2" width="6" height="12" rx="3"/><path d="M5 10a7 7 0 0014 0M12 19v3M9 22h6"/></svg></div>
+          <span>Say your destination…</span>
+        </button>
+        <div class="sec-lbl">Frequent Places</div>
+        <div class="q-grid">
+          <div class="q-card" onclick="mgoNav('Emergency Room')"><div class="qi">🏥</div><div class="qn">Emergency Room</div><div class="qs">G/F · about 3 min</div></div>
+          <div class="q-card" onclick="mgoNav('Pharmacy')"><div class="qi">💊</div><div class="qn">Pharmacy</div><div class="qs">1/F · about 5 min</div></div>
+          <div class="q-card" onclick="mgoNav('Radiology')"><div class="qi">🔬</div><div class="qn">Radiology</div><div class="qs">2/F · about 8 min</div></div>
+          <div class="q-card" onclick="mgoNav('Elevator Lobby')"><div class="qi">🛗</div><div class="qn">Elevator Lobby</div><div class="qs">G/F · about 1 min</div></div>
+        </div>
+        <div class="sec-lbl">Recent Navigation</div>
+        <div class="rec-item" onclick="mgoNav('Outpatient Room 12')"><div class="rec-dot">🏥</div><div class="rec-info"><div class="rn">Outpatient Room 12</div><div class="rs">Yesterday · 2/F</div></div><div class="rec-arr">›</div></div>
+        <div class="rec-item" onclick="mgoNav('Restroom')"><div class="rec-dot">🚻</div><div class="rec-info"><div class="rn">Restroom</div><div class="rs">3 days ago · 1/F</div></div><div class="rec-arr">›</div></div>
+        <div style="flex:1"></div>
+        <div class="bnav">
+          <button class="btab on"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/></svg>Home</button>
+          <button class="btab"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>Search</button>
+          <button class="btab"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>Me</button>
+        </div>
+      </div>
+
+      <!-- P1 Voice -->
+      <div class="pg" id="m1">
+        <div class="sbar" style="background:#1A3C6B;"><span style="color:rgba(255,255,255,.5)">9:41</span><span style="color:rgba(255,255,255,.5)">Wi-Fi</span></div>
+        <div class="v-top"><button class="bk" onclick="mgo(0)">‹</button><h3>Voice Navigation</h3></div>
+        <div class="v-body">
+          <div class="ring"><svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2"><rect x="9" y="2" width="6" height="12" rx="3"/><path d="M5 10a7 7 0 0014 0M12 19v3M9 22h6"/></svg></div>
+          <div class="v-hint">Listening…</div>
+          <div class="v-recog" id="vrecog"></div>
+          <div class="v-sug">
+            <div class="v-sug-lbl">Quick Select</div>
+            <button class="v-sug-btn" onclick="mgoNav('Emergency Room')">Emergency Room</button>
+            <button class="v-sug-btn" onclick="mgoNav('Pharmacy')">Pharmacy</button>
+            <button class="v-sug-btn" onclick="mgoNav('Outpatient Room 12')">Outpatient Room 12</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- P2 3D Nav Map -->
+      <div class="pg" id="m2" style="background:#f0f4f8;">
+        <div class="sbar"><span>9:41</span><span>Wi-Fi</span></div>
+        <div style="padding:10px 14px 7px;display:flex;align-items:center;gap:8px;background:#fff;border-bottom:1px solid #eee;">
+          <button style="background:none;border:none;font-size:18px;color:#1A3C6B;cursor:pointer;" onclick="mgo(0)">‹</button>
+          <div><div style="font-size:11px;color:#888;">Navigate to</div><div style="font-size:14px;font-weight:500;" id="ndest">Emergency Room</div></div>
+        </div>
+        <canvas class="map" id="map3d" height="240"></canvas>
+        <div class="nav-panel" id="nav-panel">
+          <div class="nav-row">
+            <div class="nav-ic"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5"><path d="M9 18l6-6-6-6"/></svg></div>
+            <div class="nav-ins"><div class="na" id="s-action">Go straight along Corridor A</div><div class="nd" id="s-dist">About 30 steps</div></div>
+          </div>
+          <div class="prog"><div class="prog-fill" id="prog" style="width:8%"></div></div>
+          <div class="nav-meta"><span id="m-left">0 steps taken</span><span id="m-right">About 80 steps left</span></div>
+          <div class="haz"><span>⚠</span><span>Steps ahead in 10 steps. Please be careful.</span></div>
+          <button class="sim-btn" id="sim-btn">Simulate Walking →</button>
+        </div>
+        <div class="arrived" id="arrived">
+          <div class="arr-ic"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#2e7d32" stroke-width="2.5"><path d="M20 6L9 17l-5-5"/></svg></div>
+          <h2>You have arrived</h2>
+          <p id="adest" style="margin-top:4px;">Emergency Room · Queen Elizabeth Hospital</p>
+          <p style="margin-top:8px;">Total <b>80 steps</b>, about <b>2 minutes</b></p>
+          <div style="display:flex;gap:8px;margin-top:16px;width:100%;">
+            <button style="flex:1;border:1px solid #e5eaf0;border-radius:8px;padding:9px;font-size:12px;cursor:pointer;background:#fff;font-family:'DM Sans',sans-serif;">👍 Accurate</button>
+            <button style="flex:1;border:1px solid #e5eaf0;border-radius:8px;padding:9px;font-size:12px;cursor:pointer;background:#fff;font-family:'DM Sans',sans-serif;">👎 Problem</button>
+          </div>
+          <button class="home-btn" onclick="appReset()">Back to Home</button>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <div class="app-info">
+    <h3>User Flow</h3>
+    <div class="step-li"><div class="step-n">1</div><div class="step-t"><b>Home</b>Tap the microphone or a frequent-place card</div></div>
+    <div class="step-li"><div class="step-n">2</div><div class="step-t"><b>Voice Input</b>Say your destination or choose a quick option</div></div>
+    <div class="step-li"><div class="step-n">3</div><div class="step-t"><b>3D Indoor Navigation</b>Real-time map rendering + voice guidance + hazard alerts</div></div>
+    <div class="step-li"><div class="step-n">4</div><div class="step-t"><b>Arrival Confirmation</b>Voice confirmation + route quality rating</div></div>
+    <div class="hint-box">Tap any button inside the phone screen to try the full flow</div>
+  </div>
+</div>
+</div>
+
+<!-- ══ DASHBOARD PANEL ══ -->
+<div class="panel" id="tab-dash">
+<div class="dash-wrap">
+  <div class="dash">
+    <div class="sidebar">
+      <div class="sidebar-logo"><div class="lg">InnerGuide</div><div class="ls">Venue Admin Dashboard</div></div>
+      <button class="s-item on" onclick="dswitch('overview',this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>Overview</button>
+      <button class="s-item" onclick="dswitch('map',this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><polygon points="3 6 9 3 15 6 21 3 21 18 15 21 9 18 3 21"/><line x1="9" y1="3" x2="9" y2="18"/><line x1="15" y1="6" x2="15" y2="21"/></svg>Map Management</button>
+      <button class="s-item" onclick="dswitch('poi',this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>POI Management</button>
+      <button class="s-item" onclick="dswitch('alerts',this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9M13.73 21a2 2 0 01-3.46 0"/></svg>User Feedback</button>
+    </div>
+    <div class="dash-main">
+
+      <div id="dv-overview" class="d-view on">
+        <div class="dash-hdr"><h2>Overview</h2><select class="venue-sel"><option>Queen Elizabeth Hospital</option><option>The University of Hong Kong</option><option>New Town Plaza, Sha Tin</option></select></div>
+        <div class="metrics">
+          <div class="metric"><div class="ml">Monthly Navigation Count</div><div class="mv">3,847</div><div class="mt">+12% vs last month</div></div>
+          <div class="metric"><div class="ml">Task Completion Rate</div><div class="mv">94%</div><div class="mt">+2% vs last month</div></div>
+          <div class="metric"><div class="ml">Active Users</div><div class="mv">621</div><div class="mt">+8% vs last month</div></div>
+          <div class="metric"><div class="ml">Average Time</div><div class="mv">2.3<span style="font-size:13px"> min</span></div><div class="mt neg">-0.2 min</div></div>
+        </div>
+        <div class="dash-panels">
+          <div class="card">
+            <h4>Top 5 Popular Routes</h4>
+            <div class="route-row"><span class="rn">Entrance → Emergency Room</span><div class="bar-wrap"><div class="mini-bar" style="width:76px"></div><span class="rc">847</span></div></div>
+            <div class="route-row"><span class="rn">Emergency Room → Pharmacy</span><div class="bar-wrap"><div class="mini-bar" style="width:58px"></div><span class="rc">634</span></div></div>
+            <div class="route-row"><span class="rn">Entrance → Radiology</span><div class="bar-wrap"><div class="mini-bar" style="width:43px"></div><span class="rc">476</span></div></div>
+            <div class="route-row"><span class="rn">Elevator → Outpatient Room 12</span><div class="bar-wrap"><div class="mini-bar" style="width:29px"></div><span class="rc">312</span></div></div>
+            <div class="route-row"><span class="rn">Pharmacy → Exit</span><div class="bar-wrap"><div class="mini-bar" style="width:21px"></div><span class="rc">228</span></div></div>
+          </div>
+          <div class="card">
+            <h4>Recent Notifications</h4>
+            <div class="alert-item"><div class="alert-dot dot-warn"></div><div><div class="at">Corridor B temporarily closed</div><div class="as">Route automatically rerouted · Today</div></div></div>
+            <div class="alert-item"><div class="alert-dot dot-ok"></div><div><div class="at">Pharmacy POI coordinates updated</div><div class="as">Approved · Yesterday</div></div></div>
+            <div class="alert-item"><div class="alert-dot dot-info"></div><div><div class="at">Map v1.4 is live</div><div class="as">System notice · 3 days ago</div></div></div>
+            <div class="alert-item"><div class="alert-dot dot-warn"></div><div><div class="at">2 user feedback items pending</div><div class="as">Issue feedback · 3 days ago</div></div></div>
+          </div>
+        </div>
+      </div>
+
+      <div id="dv-map" class="d-view">
+        <div class="dash-hdr"><h2>Map Management</h2><button class="add-btn">+ Upload New Map</button></div>
+        <div class="map-card">
+          <div class="map-card-hdr"><h4>Queen Elizabeth Hospital · G/F Floor Plan v1.4</h4><span style="font-size:11px;color:#2e7d32;">Live</span></div>
+          <svg width="100%" viewBox="0 0 400 180"><rect x="10" y="10" width="380" height="160" rx="8" fill="#dde8f5" stroke="#c5d5e8" stroke-width="1"/><rect x="30" y="40" width="340" height="26" rx="4" fill="#eef4fa"/><rect x="30" y="86" width="340" height="26" rx="4" fill="#eef4fa"/><rect x="30" y="132" width="340" height="26" rx="4" fill="#eef4fa"/><rect x="76" y="40" width="28" height="118" rx="4" fill="#eef4fa"/><rect x="196" y="40" width="28" height="118" rx="4" fill="#eef4fa"/><rect x="286" y="40" width="28" height="118" rx="4" fill="#eef4fa"/><circle cx="50" cy="53" r="7" fill="#1A3C6B"/><text x="50" y="74" text-anchor="middle" font-size="9" fill="#1A3C6B">Entrance</text><circle cx="330" cy="53" r="7" fill="#e74c3c"/><text x="330" y="74" text-anchor="middle" font-size="9" fill="#993c1d">Emergency Room</text><circle cx="50" cy="145" r="7" fill="#2e7d32"/><text x="50" y="166" text-anchor="middle" font-size="9" fill="#2e7d32">Pharmacy</text><circle cx="210" cy="99" r="7" fill="#7B5EA7"/><text x="210" y="120" text-anchor="middle" font-size="9" fill="#534AB7">Elevator</text></svg>
+        </div>
+        <div class="stat-row">
+          <div class="stat-card"><div class="sl">Current Version</div><div class="sv">v1.4</div></div>
+          <div class="stat-card"><div class="sl">POI Count</div><div class="sv">24</div></div>
+          <div class="stat-card"><div class="sl">Floors</div><div class="sv">5 floors</div></div>
+          <div class="stat-card"><div class="sl">Last Updated</div><div class="sv">3 days ago</div></div>
+        </div>
+      </div>
+
+      <div id="dv-poi" class="d-view">
+        <div class="dash-hdr"><h2>POI Management</h2><button class="add-btn">+ Add POI</button></div>
+        <div style="padding:0 20px 14px;">
+          <div class="poi-item"><span>🏥</span><span>Emergency Room</span><span style="font-size:11px;color:#888;margin-left:6px;">G/F · Accessible route</span><span class="poi-badge badge-ok">Approved</span><span class="poi-edit">Edit</span></div>
+          <div class="poi-item"><span>💊</span><span>Pharmacy</span><span style="font-size:11px;color:#888;margin-left:6px;">1/F · Accessible route</span><span class="poi-badge badge-ok">Approved</span><span class="poi-edit">Edit</span></div>
+          <div class="poi-item"><span>🔬</span><span>Radiology</span><span style="font-size:11px;color:#888;margin-left:6px;">2/F · Stairs</span><span class="poi-badge badge-warn">Pending</span><span class="poi-edit">Edit</span></div>
+          <div class="poi-item"><span>🛗</span><span>Elevator Lobby</span><span style="font-size:11px;color:#888;margin-left:6px;">G/F · Accessible</span><span class="poi-badge badge-ok">Approved</span><span class="poi-edit">Edit</span></div>
+          <div class="poi-item"><span>🚻</span><span>Accessible Restroom</span><span style="font-size:11px;color:#888;margin-left:6px;">1/F · Accessible</span><span class="poi-badge badge-ok">Approved</span><span class="poi-edit">Edit</span></div>
+          <div class="poi-item"><span>📋</span><span>Registration Desk</span><span style="font-size:11px;color:#888;margin-left:6px;">G/F · Tactile paving</span><span class="poi-badge badge-warn">Pending</span><span class="poi-edit">Edit</span></div>
+        </div>
+      </div>
+
+      <div id="dv-alerts" class="d-view">
+        <div class="dash-hdr"><h2>User Issue Feedback</h2></div>
+        <div style="padding:0 20px 14px;">
+          <div class="fb-item"><div class="fb-top"><span>Incorrect POI Location: Radiology</span><span class="fb-badge badge-warn">Pending</span></div><div class="fb-desc">User reported the 2/F Radiology coordinates are offset by about 10 meters, guiding them to an empty corridor.</div><div class="fb-time">Today · User #3821</div></div>
+          <div class="fb-item"><div class="fb-top"><span>Missing Hazard Alert: Corridor B Stairs</span><span class="fb-badge badge-warn">Pending</span></div><div class="fb-desc">The stairs at the end of Corridor B did not trigger a step alert.</div><div class="fb-time">Yesterday · User #2974</div></div>
+          <div class="fb-item"><div class="fb-top"><span>New POI Suggestion: Nursing Room</span><span class="fb-badge badge-ok">Resolved</span></div><div class="fb-desc">Suggested adding a Nursing Room POI on 1/F for users who need it.</div><div class="fb-time">3 days ago · User #1102</div></div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script>
+// ── Tab switching ──
+function switchTab(t,btn){
+  document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('on'));
+  document.querySelectorAll('.panel').forEach(p=>p.classList.remove('on'));
+  btn.classList.add('on');
+  document.getElementById('tab-'+t).classList.add('on');
+  if(t==='app') initMap();
+}
+
+// ── App page switching ──
+function mgo(n){
+  document.querySelectorAll('.pg').forEach(p=>p.classList.remove('on'));
+  document.getElementById('m'+n).classList.add('on');
+  if(n===1) startListen();
+  if(n===2) initMap();
+}
+
+function mgoNav(dest){
+  document.getElementById('ndest').textContent=dest;
+  document.getElementById('adest').textContent=dest+' · Queen Elizabeth Hospital';
+  appReset();
+  mgo(2);
+}
+
+function appReset(){
+  navProgress=0; stepIdx=0;
+  document.getElementById('prog').style.width='8%';
+  document.getElementById('s-action').textContent='Go straight along Corridor A';
+  document.getElementById('s-dist').textContent='About 30 steps';
+  document.getElementById('m-left').textContent='0 steps taken';
+  document.getElementById('m-right').textContent='About 80 steps left';
+  document.getElementById('nav-panel').style.display='block';
+  document.getElementById('arrived').style.display='none';
+  if(n===0) mgo(0);
+}
+function appReset(goHome){
+  navProgress=0; stepIdx=0;
+  document.getElementById('prog').style.width='8%';
+  document.getElementById('s-action').textContent='Go straight along Corridor A';
+  document.getElementById('s-dist').textContent='About 30 steps';
+  document.getElementById('m-left').textContent='0 steps taken';
+  document.getElementById('m-right').textContent='About 80 steps left';
+  document.getElementById('nav-panel').style.display='block';
+  document.getElementById('arrived').style.display='none';
+  if(goHome) mgo(0);
+}
+document.querySelector('.home-btn').addEventListener('click',function(){appReset(true);});
+
+function startListen(){
+  var el=document.getElementById('vrecog'); el.textContent='';
+  var seq=['Emer…','Emergen…','Emergency Room']; var i=0;
+  var iv=setInterval(function(){if(i<seq.length)el.textContent=seq[i++];else clearInterval(iv);},450);
+}
+
+// ── Dashboard switching ──
+function dswitch(view,btn){
+  document.querySelectorAll('.d-view').forEach(v=>v.classList.remove('on'));
+  document.querySelectorAll('.s-item').forEach(b=>b.classList.remove('on'));
+  document.getElementById('dv-'+view).classList.add('on');
+  btn.classList.add('on');
+}
+
+// ── 3D Map ──
+var mapInited=false, renderer3d, scene3d, camera3d, navCurve, userMarker, pulseRing, destFlag;
+var navProgress=0, stepIdx=0, animT=0, currentPos=0;
+
+var navSteps=[
+  {pct:'8%', a:'Go straight along Corridor A',    d:'About 30 steps', l:'0 steps taken',  r:'About 80 steps left'},
+  {pct:'28%',a:'Turn left into Corridor B',   d:'About 20 steps', l:'20 steps taken', r:'About 60 steps left'},
+  {pct:'52%',a:'Go straight through the central corridor',   d:'About 15 steps', l:'42 steps taken', r:'About 38 steps left'},
+  {pct:'74%',a:'Turn right. Destination is on the right', d:'About 12 steps', l:'60 steps taken', r:'About 20 steps left'},
+  {pct:'92%',a:'Destination is ahead',   d:'About 5 steps',  l:'75 steps taken', r:'About 5 steps left'},
+];
+
+document.getElementById('sim-btn').addEventListener('click',function(){
+  if(stepIdx<navSteps.length){
+    var s=navSteps[stepIdx++];
+    document.getElementById('prog').style.width=s.pct;
+    document.getElementById('s-action').textContent=s.a;
+    document.getElementById('s-dist').textContent=s.d;
+    document.getElementById('m-left').textContent=s.l;
+    document.getElementById('m-right').textContent=s.r;
+    navProgress=parseFloat(s.pct)/100;
+    if(stepIdx===navSteps.length){
+      setTimeout(function(){
+        document.getElementById('nav-panel').style.display='none';
+        document.getElementById('arrived').style.display='flex';
+      },1200);
+    }
+  }
+});
+
+function initMap(){
+  var cv=document.getElementById('map3d');
+  if(!cv) return;
+  cv.width=cv.offsetWidth||278;
+  cv.height=240;
+  if(mapInited){renderer3d.setSize(cv.width,cv.height);return;}
+  mapInited=true;
+  var W=cv.width,H=cv.height;
+  renderer3d=new THREE.WebGLRenderer({canvas:cv,antialias:true});
+  renderer3d.setSize(W,H);
+  renderer3d.setPixelRatio(Math.min(window.devicePixelRatio,2));
+  renderer3d.shadowMap.enabled=true;
+
+  scene3d=new THREE.Scene();
+  scene3d.background=new THREE.Color(0xddeaf7);
+  scene3d.fog=new THREE.Fog(0xddeaf7,20,34);
+
+  camera3d=new THREE.PerspectiveCamera(50,W/H,0.1,100);
+  camera3d.position.set(0,10,14);
+  camera3d.lookAt(0,0,0);
+
+  scene3d.add(new THREE.AmbientLight(0xffffff,0.75));
+  var sun=new THREE.DirectionalLight(0xffffff,0.9);
+  sun.position.set(5,14,8); sun.castShadow=true; scene3d.add(sun);
+  scene3d.add(new THREE.DirectionalLight(0xc8e0ff,0.4)).position.set(-5,6,-5);
+
+  var floor=new THREE.Mesh(new THREE.PlaneGeometry(30,30),new THREE.MeshStandardMaterial({color:0xc8ddf0,roughness:0.9}));
+  floor.rotation.x=-Math.PI/2; floor.receiveShadow=true; scene3d.add(floor);
+
+  function corr(w,d,x,z){
+    var m=new THREE.Mesh(new THREE.BoxGeometry(w,0.1,d),new THREE.MeshStandardMaterial({color:0xddeaf7,roughness:0.8}));
+    m.position.set(x,0.05,z); m.receiveShadow=true; scene3d.add(m);
+  }
+  corr(14,2.2,0,-3); corr(14,2.2,0,3);
+  corr(2.2,10,-5,0); corr(2.2,10,5,0); corr(2.2,10,0,0);
+
+  function room(w,h,d,x,z,col){
+    var g=new THREE.Group();
+    var b=new THREE.Mesh(new THREE.BoxGeometry(w,h,d),new THREE.MeshStandardMaterial({color:col,roughness:0.35,metalness:0.12}));
+    b.position.y=h/2; b.castShadow=true; b.receiveShadow=true; g.add(b);
+    var r=new THREE.Mesh(new THREE.BoxGeometry(w+0.05,0.06,d+0.05),new THREE.MeshStandardMaterial({color:0xb0c4de,roughness:0.6}));
+    r.position.y=h+0.03; g.add(r);
+    g.position.set(x,0,z); scene3d.add(g);
+  }
+  room(3.5,1.4,2.5,-5.5,-6,0x4a90c4);
+  room(3,1.6,2.5,5.5,-6,0xe05c5c);
+  room(2.8,1.2,2,-5.5,6,0x5aaa6a);
+  room(2.8,1.2,2,5.5,6,0x8070c8);
+  room(2,1,2,0,-6,0x60a0d8);
+  room(2,1,2,0,6,0x60a0d8);
+
+  var pts=[
+    new THREE.Vector3(-5.5,-0.02,-4.5),
+    new THREE.Vector3(-5.5,-0.02,-0.5),
+    new THREE.Vector3(-0.5,-0.02,-0.5),
+    new THREE.Vector3(-0.5,-0.02,-3),
+    new THREE.Vector3(4.5,-0.02,-3),
+    new THREE.Vector3(5.5,-0.02,-4.5)
+  ];
+  navCurve=new THREE.CatmullRomCurve3(pts);
+  scene3d.add(new THREE.Mesh(new THREE.TubeGeometry(navCurve,120,0.1,8,false),new THREE.MeshBasicMaterial({color:0x1A3C6B,transparent:true,opacity:0.75})));
+
+  pts.slice(1,-1).forEach(function(p){
+    var dot=new THREE.Mesh(new THREE.CircleGeometry(0.18,16),new THREE.MeshBasicMaterial({color:0x3af7ff,side:THREE.DoubleSide}));
+    dot.rotation.x=-Math.PI/2; dot.position.set(p.x,0.01,p.z); scene3d.add(dot);
+  });
+
+  userMarker=new THREE.Group();
+  var ub=new THREE.Mesh(new THREE.CylinderGeometry(0.18,0.18,0.5,16),new THREE.MeshBasicMaterial({color:0x1A3C6B}));
+  ub.position.y=0.25; userMarker.add(ub);
+  var ut=new THREE.Mesh(new THREE.SphereGeometry(0.22,16,16),new THREE.MeshBasicMaterial({color:0xffffff}));
+  ut.position.y=0.6; userMarker.add(ut);
+  scene3d.add(userMarker);
+
+  pulseRing=new THREE.Mesh(new THREE.RingGeometry(0.28,0.4,32),new THREE.MeshBasicMaterial({color:0x1A3C6B,side:THREE.DoubleSide,transparent:true,opacity:0.6}));
+  pulseRing.rotation.x=-Math.PI/2; pulseRing.position.y=0.01; scene3d.add(pulseRing);
+
+  destFlag=new THREE.Group();
+  var pole=new THREE.Mesh(new THREE.CylinderGeometry(0.04,0.04,1.2,8),new THREE.MeshBasicMaterial({color:0xcc0000}));
+  pole.position.y=0.6; destFlag.add(pole);
+  var flag=new THREE.Mesh(new THREE.BoxGeometry(0.5,0.3,0.04),new THREE.MeshBasicMaterial({color:0xff4d6d}));
+  flag.position.set(0.25,1.15,0); destFlag.add(flag);
+  destFlag.position.set(5.5,0,-4.5); scene3d.add(destFlag);
+
+  (function loop(){
+    requestAnimationFrame(loop);
+    animT+=0.012;
+    currentPos+=(navProgress-currentPos)*0.025;
+    var pos=navCurve.getPoint(Math.min(currentPos,0.999));
+    userMarker.position.set(pos.x,0,pos.z);
+    pulseRing.position.set(pos.x,0.01,pos.z);
+    pulseRing.material.opacity=0.3+0.3*Math.sin(animT*3);
+    camera3d.position.x+=(pos.x*0.3-camera3d.position.x)*0.03;
+    camera3d.position.z=10+pos.z*0.25;
+    camera3d.lookAt(new THREE.Vector3(pos.x,0,pos.z));
+    destFlag.position.y=0.07*Math.sin(animT*2);
+    renderer3d.render(scene3d,camera3d);
+  })();
+}
+
+window.addEventListener('load',function(){initMap();});
+</script>
+</body>
+</html>
